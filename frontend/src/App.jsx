@@ -1,29 +1,29 @@
-import { useState } from "react";
-import StickyNote from "./components/StickyNote";
+import { useState, useEffect } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
-import StickyNotePile from "./components/StickyNotePile";
+import NoteContainer from "./components/NoteContainer";
+import NewNotesContainer from "./components/NewNotesContainer";
 
 function App() {
+  const testingList = [
+    { text: "Yellow Test", color: "yellow" },
+    { text: "Blue Test", color: "blue" },
+    { text: "Red Test", color: "red" },
+    { text: "Green Test", color: "green" },
+    { text: "new Test", color: "yellow" },
+  ];
+  const [notes, setNotes] = useState(testingList); // Switch to useLocalStorage("notes", []) later
+
   const addNew = (color) => {
     console.log(`tried to add a new note from the ${color} pile`);
   };
+
   return (
     <main>
-      <div>
+      <section>
         <h1 className="text-xl text-center text-amber-600">Note Keeping</h1>
-      </div>
-      <div className="grid grid-cols-2 gap-y-5 my-5 justify-items-center">
-        <StickyNote color="yellow" text="Test" />
-        <StickyNote color="blue" text="Test" />
-        <StickyNote color="red" text="Test" />
-        <StickyNote color="green" text="Test" />
-      </div>
-      <div className="absolute right-5 top-20 flex flex-col gap-5">
-        <StickyNotePile color="yellow" addNew={addNew} />
-        <StickyNotePile color="blue" addNew={addNew} />
-        <StickyNotePile color="red" addNew={addNew} />
-        <StickyNotePile color="green" addNew={addNew} />
-      </div>
+      </section>
+      <NoteContainer notes={notes} />
+      <NewNotesContainer addNew={addNew} />
     </main>
   );
 }
