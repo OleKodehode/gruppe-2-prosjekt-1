@@ -23,6 +23,10 @@ main {
   @apply size-48 flex justify-center p-2 rounded;
 }
 
+.stickynote > p {
+  @apply max-w-full wrap-break-word;
+}
+
 .pile {
   @apply size-48 rounded;
 }
