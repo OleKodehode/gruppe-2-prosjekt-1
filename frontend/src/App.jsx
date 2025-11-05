@@ -1,4 +1,6 @@
+import { useState } from "react";
 import StickyNote from "./components/StickyNote";
+import useLocalStorage from "./hooks/useLocalStorage";
 
 function App() {
   return (
