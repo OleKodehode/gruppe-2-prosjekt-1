@@ -16,11 +16,15 @@
 }
 
 main {
-  @apply bg-zinc-200 dark:bg-zinc-800 text-zinc-900 m-auto;
+  @apply bg-zinc-200 dark:bg-zinc-800 text-zinc-900 m-auto relative min-h-screen;
 }
 
 .stickynote {
   @apply size-48 flex justify-center pt-2 rounded;
+}
+
+.pile {
+  @apply size-48 rounded;
 }
 
 .yellow {
