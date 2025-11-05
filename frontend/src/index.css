@@ -16,7 +16,7 @@
 }
 
 main {
-  @apply bg-zinc-200 dark:bg-zinc-800 text-zinc-900 m-auto relative min-h-screen;
+  @apply bg-zinc-200 dark:bg-zinc-800 text-zinc-900 m-auto relative min-h-screen max-w-screen;
 }
 
 .stickynote {
@@ -45,4 +45,8 @@ main {
 
 textarea {
   @apply h-full border-none outline-none overflow-clip;
+}
+
+.notecontainer {
+  @apply w-9/10;
 }
