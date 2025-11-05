@@ -12,7 +12,7 @@ function App() {
     { text: "new Test", color: "yellow", id: 5 },
     { text: "Write down your thoughts...", color: "red", id: 6 },
   ];
-  const [notes, setNotes] = useState(testingList); // Switch to useLocalStorage("notes", []) later
+  const [notes, setNotes] = useLocalStorage("myNotes", []);
 
   const addNew = (color) => {
     console.log(`tried to add a new note from the ${color} pile`);
@@ -30,12 +30,25 @@ function App() {
     setNotes(notes.filter((note) => note.id !== id));
   };
 
+  const editNote = (id, newContent) => {
+    if (!newContent) newContent = "Write down your thoughts...";
+    setNotes(
+      notes.map((note) =>
+        note.id === id ? { ...note, text: newContent } : note
+      )
+    );
+  };
+
   return (
     <main>
       <section>
         <h1 className="text-xl text-center text-amber-600">Note Keeping</h1>
       </section>
-      <NoteContainer notes={notes} removeNote={removeNote} />
+      <NoteContainer
+        notes={notes}
+        removeNote={removeNote}
+        editNote={editNote}
+      />
       <NewNotesContainer addNew={addNew} />
     </main>
   );

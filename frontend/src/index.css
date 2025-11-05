@@ -42,3 +42,7 @@ main {
 .green {
   @apply bg-green-200;
 }
+
+textarea {
+  @apply max-w-9/10 max-h-8/10;
+}
