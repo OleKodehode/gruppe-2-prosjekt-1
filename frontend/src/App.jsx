@@ -1,20 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
 import NoteContainer from "./components/NoteContainer";
 import NewNotesContainer from "./components/NewNotesContainer";
 
 function App() {
   const testingList = [
-    { text: "Yellow Test", color: "yellow" },
-    { text: "Blue Test", color: "blue" },
-    { text: "Red Test", color: "red" },
-    { text: "Green Test", color: "green" },
-    { text: "new Test", color: "yellow" },
+    { text: "Yellow Test", color: "yellow", id: 1 },
+    { text: "Blue Test", color: "blue", id: 2 },
+    { text: "Red Test", color: "red", id: 3 },
+    { text: "Green Test", color: "green", id: 4 },
+    { text: "new Test", color: "yellow", id: 5 },
+    { text: "Write down your thoughts...", color: "red", id: 6 },
   ];
   const [notes, setNotes] = useState(testingList); // Switch to useLocalStorage("notes", []) later
 
   const addNew = (color) => {
     console.log(`tried to add a new note from the ${color} pile`);
+    setNotes((prev) => [
+      ...prev,
+      {
+        text: "Write down your thoughts...",
+        color: color,
+        id: crypto.randomUUID(),
+      },
+    ]);
+  };
+
+  const removeNote = (id) => {
+    setNotes(notes.filter((note) => note.id !== id));
   };
 
   return (
@@ -22,7 +35,7 @@ function App() {
       <section>
         <h1 className="text-xl text-center text-amber-600">Note Keeping</h1>
       </section>
-      <NoteContainer notes={notes} />
+      <NoteContainer notes={notes} removeNote={removeNote} />
       <NewNotesContainer addNew={addNew} />
     </main>
   );

@@ -20,7 +20,7 @@ main {
 }
 
 .stickynote {
-  @apply size-48 flex justify-center pt-2 rounded;
+  @apply size-48 flex justify-center p-2 rounded;
 }
 
 .pile {

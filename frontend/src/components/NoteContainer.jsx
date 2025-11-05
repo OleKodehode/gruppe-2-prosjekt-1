@@ -1,6 +1,6 @@
 import StickyNote from "./StickyNote";
 
-export default function NoteContainer({ notes }) {
+export default function NoteContainer({ notes, removeNote }) {
   return (
     <section className="grid grid-cols-2 gap-y-5 my-5 justify-items-center">
       {notes &&
@@ -10,6 +10,7 @@ export default function NoteContainer({ notes }) {
             text={note.text}
             key={index}
             index={index}
+            removeNote={() => removeNote(note.id)}
           />
         ))}
     </section>
