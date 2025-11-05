@@ -44,5 +44,5 @@ main {
 }
 
 textarea {
-  @apply max-w-9/10 max-h-8/10;
+  @apply h-full border-none outline-none overflow-clip;
 }

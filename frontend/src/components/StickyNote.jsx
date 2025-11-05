@@ -12,6 +12,8 @@ export default function StickyNote({
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(placeholder ? "" : text);
 
+  // Delete button is there temporarily until I can implement deletion by other means
+
   return (
     <article
       className={`stickynote ${color} z-${

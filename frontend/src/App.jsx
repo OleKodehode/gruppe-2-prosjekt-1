@@ -1,21 +1,20 @@
-import { useState } from "react";
+// import { useState } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
 import NoteContainer from "./components/NoteContainer";
 import NewNotesContainer from "./components/NewNotesContainer";
 
 function App() {
-  const testingList = [
+  /*   const testingList = [
     { text: "Yellow Test", color: "yellow", id: 1 },
     { text: "Blue Test", color: "blue", id: 2 },
     { text: "Red Test", color: "red", id: 3 },
     { text: "Green Test", color: "green", id: 4 },
     { text: "new Test", color: "yellow", id: 5 },
     { text: "Write down your thoughts...", color: "red", id: 6 },
-  ];
+  ]; */
   const [notes, setNotes] = useLocalStorage("myNotes", []);
 
   const addNew = (color) => {
-    console.log(`tried to add a new note from the ${color} pile`);
     setNotes((prev) => [
       ...prev,
       {
@@ -55,3 +54,18 @@ function App() {
 }
 
 export default App;
+
+/*
+Todo: Make notes movable by click & drag
+Todo: Implement functionality to allow free placing of notes 
+[Requires saving coordinates]
+Todo: Add in our custom fonts and possibility to choose between them.
+Todo: Add font-choice to variables being saved with each note.
+Todo: Make it responsive - Add a mobile layout
+  - Mobile specific;
+    - Hide notepiles in a drawer
+    - Drawer opens up with a + button or something.
+    - Figure out how to translate coordinates between different screen-sizes (absolute?)
+Todo: Husky + ESLint
+Todo: Backend integration (Much later)
+*/
