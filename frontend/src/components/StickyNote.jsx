@@ -8,15 +8,19 @@ export default function StickyNote({
   removeNote,
   id,
   editNote,
-  updateNote,
-  pos: { x, y, z },
+  updateNote: { updatePos, updateOrder },
+  pos: { x, y },
 }) {
   const placeholder = text === "Write down your thoughts...";
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(placeholder ? "" : text);
   const noteID = `note-${index}`;
 
-  useDragger(noteID, (newPos) => updateNote(id, newPos));
+  useDragger(
+    noteID,
+    (newPos) => updatePos(id, newPos),
+    () => updateOrder(id)
+  );
 
   // Delete button is there temporarily until I can implement deletion by other means
 
@@ -24,7 +28,7 @@ export default function StickyNote({
     <article
       className={`stickynote ${color} flex justify-center items-center text-lg relative`}
       id={noteID}
-      style={{ top: `${y}%`, left: `${x}%`, zIndex: z }}
+      style={{ top: `${y}%`, left: `${x}%`, zIndex: index + 1 }}
     >
       {isEditing ? (
         <textarea
@@ -39,7 +43,9 @@ export default function StickyNote({
         />
       ) : (
         <p
-          className={placeholder ? "text-zinc-700 italic" : ""}
+          className={`${
+            placeholder ? "text-zinc-700 italic" : ""
+          } hover:cursor-pointer`}
           onClick={() => setIsEditing(!isEditing)}
         >
           {text}

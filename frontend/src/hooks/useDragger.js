@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export default function useDragger(id, callback) {
+export default function useDragger(id, onDragMove, onDragStart) {
   const isClicked = useRef(false);
   const coords = useRef({ startX: 0, startY: 0, lastX: 0, lastY: 0 });
 
@@ -18,6 +18,10 @@ export default function useDragger(id, callback) {
       isClicked.current = true;
       coords.current.startX = e.clientX;
       coords.current.startY = e.clientY;
+
+      coords.current.lastX = target.offsetLeft;
+      coords.current.lastY = target.offsetTop;
+      onDragStart(id);
     };
 
     const onMouseUp = () => {
@@ -42,7 +46,7 @@ export default function useDragger(id, callback) {
       target.style.left = `${percentX}%`;
       target.style.top = `${percentY}%`;
 
-      callback(id, { percentX, percentY });
+      onDragMove({ x: percentX, y: percentY });
     };
 
     target.addEventListener("mousedown", onMouseDown);
@@ -58,5 +62,5 @@ export default function useDragger(id, callback) {
     };
 
     return cleanup;
-  }, [id, callback]);
+  }, [id, onDragMove, onDragStart]);
 }

@@ -2,7 +2,6 @@
 import useLocalStorage from "./hooks/useLocalStorage";
 import NoteContainer from "./components/NoteContainer";
 import NewNotesContainer from "./components/NewNotesContainer";
-import { useRef } from "react";
 
 function App() {
   /*   const testingList = [
@@ -14,7 +13,6 @@ function App() {
     { text: "Write down your thoughts...", color: "red", id: 6 },
   ]; */
   const [notes, setNotes] = useLocalStorage("myNotes", []);
-  const maxZ = useRef(Math.max(...notes.map((note) => note.pos?.z ?? 0), 0));
 
   const addNew = (color) => {
     setNotes((prev) => [
@@ -26,7 +24,6 @@ function App() {
         pos: {
           x: 50,
           y: 50,
-          z: ++maxZ.current,
         },
       },
     ]);
@@ -45,14 +42,22 @@ function App() {
     );
   };
 
-  const updateNote = (id, { x, y }) => {
+  const updateNote = (id, pos) => {
+    const { x, y } = pos;
     setNotes((prev) =>
       prev.map((note) =>
-        note.id === id
-          ? { ...note, pos: { x: x, y: y, z: ++maxZ.current } }
-          : note
+        note.id === id ? { ...note, pos: { x: x, y: y } } : note
       )
     );
+  };
+
+  const bringToFront = (id) => {
+    console.log(`bring ${id} to front.`);
+    setNotes((prev) => {
+      const activeNote = prev.find((note) => note.id === id);
+      const others = prev.filter((note) => note.id !== id);
+      return [...others, activeNote];
+    });
   };
 
   return (
@@ -64,7 +69,7 @@ function App() {
         notes={notes}
         removeNote={removeNote}
         editNote={editNote}
-        updateNote={updateNote}
+        updateNote={{ updatePos: updateNote, updateOrder: bringToFront }}
       />
       <NewNotesContainer addNew={addNew} />
     </main>
