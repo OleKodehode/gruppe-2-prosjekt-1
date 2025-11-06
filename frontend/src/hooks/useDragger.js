@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 
-export default function useDragger(id) {
+export default function useDragger(id, callback) {
   const isClicked = useRef(false);
-
   const coords = useRef({ startX: 0, startY: 0, lastX: 0, lastY: 0 });
 
   useEffect(() => {
@@ -11,6 +10,9 @@ export default function useDragger(id) {
 
     const container = target.parentElement;
     if (!container) throw new Error("Target element must have a parent");
+
+    const rect = container.getBoundingClientRect();
+    const noteRect = target.getBoundingClientRect();
 
     const onMouseDown = (e) => {
       isClicked.current = true;
@@ -27,11 +29,20 @@ export default function useDragger(id) {
     const onMouseMove = (e) => {
       if (!isClicked.current) return;
 
-      const nextX = e.clientX - coords.current.startX + coords.current.lastX;
-      const nextY = e.clientY - coords.current.startY + coords.current.lastY;
+      let nextX = e.clientX - coords.current.startX + coords.current.lastX;
+      let nextY = e.clientY - coords.current.startY + coords.current.lastY;
 
-      target.style.top = `${nextY}px`;
-      target.style.left = `${nextX}px`;
+      // Clamping the note to make it stay inside the box
+      nextX = Math.max(0, Math.min(nextX, rect.width - noteRect.width));
+      nextY = Math.max(0, Math.min(nextY, rect.height - noteRect.height));
+
+      const percentX = (nextX / rect.width) * 100;
+      const percentY = (nextY / rect.height) * 100;
+
+      target.style.left = `${percentX}%`;
+      target.style.top = `${percentY}%`;
+
+      callback(id, { percentX, percentY });
     };
 
     target.addEventListener("mousedown", onMouseDown);
@@ -47,5 +58,5 @@ export default function useDragger(id) {
     };
 
     return cleanup;
-  }, [id]);
+  }, [id, callback]);
 }

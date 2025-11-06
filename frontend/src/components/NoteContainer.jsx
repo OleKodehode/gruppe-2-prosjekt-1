@@ -1,6 +1,11 @@
 import StickyNote from "./StickyNote";
 
-export default function NoteContainer({ notes, removeNote, editNote }) {
+export default function NoteContainer({
+  notes,
+  removeNote,
+  editNote,
+  updateNote,
+}) {
   return (
     <section className="notecontainer gap-y-5 my-5">
       {notes &&
@@ -13,6 +18,7 @@ export default function NoteContainer({ notes, removeNote, editNote }) {
             index={index}
             removeNote={removeNote}
             editNote={editNote}
+            updateNote={updateNote}
           />
         ))}
     </section>

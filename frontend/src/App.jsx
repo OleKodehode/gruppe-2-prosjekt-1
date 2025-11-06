@@ -2,6 +2,7 @@
 import useLocalStorage from "./hooks/useLocalStorage";
 import NoteContainer from "./components/NoteContainer";
 import NewNotesContainer from "./components/NewNotesContainer";
+import { useRef } from "react";
 
 function App() {
   /*   const testingList = [
@@ -13,6 +14,7 @@ function App() {
     { text: "Write down your thoughts...", color: "red", id: 6 },
   ]; */
   const [notes, setNotes] = useLocalStorage("myNotes", []);
+  const maxZ = useRef(Math.max(...notes.map((note) => note.pos?.z ?? 0), 0));
 
   const addNew = (color) => {
     setNotes((prev) => [
@@ -21,6 +23,11 @@ function App() {
         text: "Write down your thoughts...",
         color: color,
         id: crypto.randomUUID(),
+        pos: {
+          x: 50,
+          y: 50,
+          z: ++maxZ.current,
+        },
       },
     ]);
   };
@@ -38,6 +45,16 @@ function App() {
     );
   };
 
+  const updateNote = (id, { x, y }) => {
+    setNotes((prev) =>
+      prev.map((note) =>
+        note.id === id
+          ? { ...note, pos: { x: x, y: y, z: ++maxZ.current } }
+          : note
+      )
+    );
+  };
+
   return (
     <main>
       <section>
@@ -47,6 +64,7 @@ function App() {
         notes={notes}
         removeNote={removeNote}
         editNote={editNote}
+        updateNote={updateNote}
       />
       <NewNotesContainer addNew={addNew} />
     </main>

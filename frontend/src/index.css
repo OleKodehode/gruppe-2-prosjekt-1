@@ -56,5 +56,5 @@ textarea {
 }
 
 .notecontainer {
-  @apply w-9/10 relative;
+  @apply w-9/10 h-[90vh] relative overflow-clip;
 }
