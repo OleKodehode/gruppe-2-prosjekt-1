@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useDragger from "../hooks/useDragger";
 
 export default function StickyNote({
   color,
@@ -11,6 +12,9 @@ export default function StickyNote({
   const placeholder = text === "Write down your thoughts...";
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(placeholder ? "" : text);
+  const noteID = `note-${index}`;
+
+  useDragger(noteID);
 
   // Delete button is there temporarily until I can implement deletion by other means
 
@@ -19,6 +23,7 @@ export default function StickyNote({
       className={`stickynote ${color} z-${
         index + 1
       } flex justify-center items-center text-lg relative`}
+      id={noteID}
     >
       {isEditing ? (
         <textarea

@@ -20,7 +20,11 @@ main {
 }
 
 .stickynote {
-  @apply size-48 flex justify-center p-2 rounded;
+  @apply absolute top-20 left-20 size-48 flex justify-center p-2 rounded cursor-grab select-none;
+}
+
+.stickynote:active {
+  @apply cursor-grabbing shadow-lg shadow-slate-900;
 }
 
 .stickynote > p {
@@ -52,5 +56,5 @@ textarea {
 }
 
 .notecontainer {
-  @apply w-9/10;
+  @apply w-9/10 relative;
 }
