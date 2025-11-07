@@ -24,7 +24,7 @@ main {
 }
 
 .stickynote:hover {
-  @apply outline-2 outline-neutral-300 scale-105;
+  @apply outline-2 outline-neutral-300 scale-102;
 }
 
 .stickynote:active {
