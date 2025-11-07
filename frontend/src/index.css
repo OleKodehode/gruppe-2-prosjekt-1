@@ -20,7 +20,11 @@ main {
 }
 
 .stickynote {
-  @apply absolute top-20 left-20 size-48 flex justify-center p-2 rounded cursor-grab select-none;
+  @apply absolute top-20 left-20 size-36 md:size-48 flex justify-center p-2 rounded cursor-grab select-none;
+}
+
+.stickynote:hover {
+  @apply outline-2 outline-neutral-300 scale-105;
 }
 
 .stickynote:active {
@@ -32,7 +36,7 @@ main {
 }
 
 .pile {
-  @apply size-48 rounded;
+  @apply size-24 md:size-36 rounded;
 }
 
 .yellow {

@@ -79,6 +79,9 @@ function App() {
 export default App;
 
 /*
+Todo: Login modal
+Todo: Delete Modal
+Todo: Trash Can for deleting notes
 Todo: Make notes movable by click & drag
 Todo: Implement functionality to allow free placing of notes 
 [Requires saving coordinates]

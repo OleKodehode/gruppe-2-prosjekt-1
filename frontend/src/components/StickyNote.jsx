@@ -18,6 +18,7 @@ export default function StickyNote({
 
   useDragger(
     noteID,
+    id,
     (newPos) => updatePos(id, newPos),
     () => updateOrder(id)
   );

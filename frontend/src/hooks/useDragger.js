@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 
-export default function useDragger(id, onDragMove, onDragStart) {
+export default function useDragger(htmlId, noteId, onDragMove, onDragEnd) {
   const isClicked = useRef(false);
   const coords = useRef({ startX: 0, startY: 0, lastX: 0, lastY: 0 });
 
   useEffect(() => {
-    const target = document.getElementById(id);
+    const target = document.getElementById(htmlId);
     if (!target) throw new Error("Element with given id doesn't exist"); // should rarely trigger
 
     const container = target.parentElement;
@@ -21,13 +21,13 @@ export default function useDragger(id, onDragMove, onDragStart) {
 
       coords.current.lastX = target.offsetLeft;
       coords.current.lastY = target.offsetTop;
-      onDragStart(id);
     };
 
     const onMouseUp = () => {
       isClicked.current = false;
       coords.current.lastX = target.offsetLeft;
       coords.current.lastY = target.offsetTop;
+      onDragEnd(noteId);
     };
 
     const onMouseMove = (e) => {
@@ -62,5 +62,5 @@ export default function useDragger(id, onDragMove, onDragStart) {
     };
 
     return cleanup;
-  }, [id, onDragMove, onDragStart]);
+  }, [htmlId, onDragMove, onDragEnd]);
 }
