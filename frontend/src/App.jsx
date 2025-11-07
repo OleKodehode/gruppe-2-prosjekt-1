@@ -24,6 +24,7 @@ function App() {
         pos: {
           x: 50,
           y: 50,
+          z: notes.length + 1,
         },
       },
     ]);
@@ -44,9 +45,10 @@ function App() {
 
   const updateNote = (id, pos) => {
     const { x, y } = pos;
+    const maxZ = Math.max(notes.length, 0);
     setNotes((prev) =>
       prev.map((note) =>
-        note.id === id ? { ...note, pos: { x: x, y: y } } : note
+        note.id === id ? { ...note, pos: { x: x, y: y, z: maxZ + 1 } } : note
       )
     );
   };
