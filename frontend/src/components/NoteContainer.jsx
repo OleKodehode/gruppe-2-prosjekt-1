@@ -14,7 +14,7 @@ export default function NoteContainer({
             {...note}
             color={note.color}
             text={note.text}
-            key={index}
+            key={note.id}
             index={index}
             removeNote={removeNote}
             editNote={editNote}

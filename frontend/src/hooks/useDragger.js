@@ -62,5 +62,5 @@ export default function useDragger(htmlId, noteId, onDragMove, onDragEnd) {
     };
 
     return cleanup;
-  }, [htmlId, onDragMove, onDragEnd]);
+  }, [htmlId, noteId, onDragMove, onDragEnd]);
 }

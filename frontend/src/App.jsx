@@ -80,11 +80,9 @@ export default App;
 
 /*
 Todo: Login modal
-Todo: Delete Modal
+Todo: Delete note Modal
 Todo: Trash Can for deleting notes
-Todo: Make notes movable by click & drag
-Todo: Implement functionality to allow free placing of notes 
-[Requires saving coordinates]
+Todo: Fix bugs with drag and drop
 Todo: Add in our custom fonts and possibility to choose between them.
 Todo: Add font-choice to variables being saved with each note.
 Todo: Make it responsive - Add a mobile layout
@@ -94,4 +92,6 @@ Todo: Make it responsive - Add a mobile layout
     - Figure out how to translate coordinates between different screen-sizes (absolute?)
 Todo: Husky + ESLint
 Todo: Backend integration (Much later)
+Todo: If the user puts in a link to an image, swap out P tag with an img tag. 
+Todo: Save the image link as text content in localstorage/backend
 */
