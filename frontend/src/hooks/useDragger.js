@@ -1,66 +1,148 @@
 import { useEffect, useRef } from "react";
 
-export default function useDragger(htmlId, noteId, onDragMove, onDragEnd) {
-  const isClicked = useRef(false);
-  const coords = useRef({ startX: 0, startY: 0, lastX: 0, lastY: 0 });
+export default function useDragger(
+  htmlId,
+  noteId,
+  onDragStart = () => {},
+  onDragEnd = () => {}
+) {
+  const draggingRef = useRef(false);
+  const coords = useRef({
+    startClientX: 0,
+    startClientY: 0,
+    startLeft: 0,
+    startTop: 0,
+  });
+  const geometryRef = useRef({ containerRect: null, noteRect: null });
+
+  const onDragStartRef = useRef(onDragStart);
+  const onDragEndRef = useRef(onDragEnd);
+
+  useEffect(() => {
+    onDragStartRef.current = onDragStart;
+    onDragEndRef.current = onDragEnd;
+  }, [onDragStart, onDragEnd]);
 
   useEffect(() => {
     const target = document.getElementById(htmlId);
-    if (!target) throw new Error("Element with given id doesn't exist"); // should rarely trigger
+    if (!target) return;
 
     const container = target.parentElement;
-    if (!container) throw new Error("Target element must have a parent");
+    if (!container) return;
 
-    const rect = container.getBoundingClientRect();
-    const noteRect = target.getBoundingClientRect();
-
-    const onMouseDown = (e) => {
-      isClicked.current = true;
-      coords.current.startX = e.clientX;
-      coords.current.startY = e.clientY;
-
-      coords.current.lastX = target.offsetLeft;
-      coords.current.lastY = target.offsetTop;
+    const getGeometry = () => {
+      geometryRef.current.containerRect = container.getBoundingClientRect();
+      geometryRef.current.noteRect = target.getBoundingClientRect();
     };
 
-    const onMouseUp = () => {
-      isClicked.current = false;
-      coords.current.lastX = target.offsetLeft;
-      coords.current.lastY = target.offsetTop;
-      onDragEnd(noteId);
+    getGeometry();
+
+    const onResize = () => getGeometry();
+    window.addEventListener("resize", onResize);
+
+    const pointerDown = (e) => {
+      if (e.button && e.button !== 0) return; //only left button or touch event
+      try {
+        onDragStartRef.current?.(e);
+      } catch (err) {
+        console.error(err);
+      }
+
+      draggingRef.current = true;
+      getGeometry();
+
+      coords.current.startClientX = e.clientX;
+      coords.current.startClientY = e.clientY;
+      coords.current.startLeft = target.offsetLeft;
+      coords.current.startTop = target.offsetTop;
+
+      try {
+        target.setPointerCapture?.(e.pointerId);
+      } catch (err) {
+        console.error("Pointerdown capture error:", err);
+      }
+      // Allow parent ot handle bringing to front via it's onPointerDown
+      e.preventDefault();
     };
 
-    const onMouseMove = (e) => {
-      if (!isClicked.current) return;
+    const pointerMove = (e) => {
+      if (!draggingRef.current) return;
 
-      let nextX = e.clientX - coords.current.startX + coords.current.lastX;
-      let nextY = e.clientY - coords.current.startY + coords.current.lastY;
+      // Recomputing noteRect just in case
+      geometryRef.current.noteRect = target.getBoundingClientRect();
+      const { containerRect, noteRect } = geometryRef.current;
+      if (!containerRect || !noteRect) return;
 
-      // Clamping the note to make it stay inside the box
-      nextX = Math.max(0, Math.min(nextX, rect.width - noteRect.width));
-      nextY = Math.max(0, Math.min(nextY, rect.height - noteRect.height));
+      let nextX =
+        e.clientX - coords.current.startClientX + coords.current.startLeft;
+      let nextY =
+        e.clientY - coords.current.startClientY + coords.current.startTop;
 
-      const percentX = (nextX / rect.width) * 100;
-      const percentY = (nextY / rect.height) * 100;
+      // Clamping to container bounds
+      nextX = Math.max(
+        0,
+        Math.min(nextX, containerRect.width - noteRect.width)
+      );
+      nextY = Math.max(
+        0,
+        Math.min(nextY, containerRect.height - noteRect.height)
+      );
+
+      // Convert to percentage
+      const percentX = (nextX / containerRect.width) * 100;
+      const percentY = (nextY / containerRect.height) * 100;
 
       target.style.left = `${percentX}%`;
       target.style.top = `${percentY}%`;
 
-      onDragMove({ x: percentX, y: percentY });
+      //comment out below to possibly disable live update:
+      onDragEndRef.current(noteId, percentX, percentY);
     };
 
-    target.addEventListener("mousedown", onMouseDown);
-    target.addEventListener("mouseup", onMouseUp);
-    container.addEventListener("mousemove", onMouseMove);
-    container.addEventListener("mouseleave", onMouseUp);
+    const pointerUp = (e) => {
+      if (!draggingRef.current) return;
+      draggingRef.current = false;
+
+      try {
+        target.releasePointerCapture?.(e.pointerId);
+      } catch (err) {
+        console.error("Issue with releasing pointer capture," + err);
+      }
+
+      // If the element gets removed
+      if (!document.body.contains(target)) return;
+
+      getGeometry();
+
+      const left = target.offsetLeft;
+      const top = target.offsetTop;
+      const containerWidth = geometryRef.current.containerRect?.width || 1;
+      const containerHeight = geometryRef.current.containerRect?.height || 1;
+      const percentX = (left / containerWidth) * 100;
+      const percentY = (top / containerHeight) * 100;
+
+      try {
+        onDragEndRef.current?.(noteId, percentX, percentY);
+      } catch (err) {
+        console.error("onDragEnd error:", err);
+      }
+    };
+
+    target.addEventListener("pointerdown", pointerDown);
+    window.addEventListener("pointermove", pointerMove);
+    window.addEventListener("pointerup", pointerUp);
+    window.addEventListener("pointercancel", pointerUp);
+    container.addEventListener("pointerleave", pointerUp);
 
     const cleanup = () => {
-      target.removeEventListener("mousedown", onMouseDown);
-      target.removeEventListener("mouseup", onMouseUp);
-      container.removeEventListener("mousemove", onMouseMove);
-      container.removeEventListener("mouseleave", onMouseUp);
+      target.removeEventListener("pointerdown", pointerDown);
+      window.removeEventListener("pointermove", pointerMove);
+      window.removeEventListener("pointerup", pointerUp);
+      window.removeEventListener("pointercancel", pointerUp);
+      container.removeEventListener("pointerleave", pointerUp);
+      window.removeEventListener("resize", onResize);
     };
 
     return cleanup;
-  }, [htmlId, noteId, onDragMove, onDragEnd]);
+  }, [htmlId, noteId]);
 }

@@ -1,35 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useDragger from "../hooks/useDragger";
 
 export default function StickyNote({
+  id,
   color,
   text,
-  index,
-  removeNote,
-  id,
-  editNote,
-  updateNote: { updatePos, updateOrder },
-  pos: { x, y },
+  x = 50,
+  y = 50,
+  z = 0,
+  isActive = false,
+  onPointerDown = () => {},
+  onMove = () => {}, // Expects id, percentX, percentY
+  onEdit = () => {}, // Expects id, newText
+  onDelete = () => {},
 }) {
+  const noteID = `n-${id}`;
   const placeholder = text === "Write down your thoughts...";
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(placeholder ? "" : text);
-  const noteID = `note-${index}`;
 
+  // Keeping local newText synced when text prop changes.
+  useEffect(() => {
+    setNewText(placeholder ? "" : text);
+  }, [text, placeholder]);
+
+  /* 
+  Hook expects the ID from the article tag (htmlId), 
+  the id attached to the note (noteId -> note.id), 
+  callback for when a note is clicked,
+  and a callback for when a note is being moved
+  */
   useDragger(
     noteID,
     id,
-    (newPos) => updatePos(id, newPos),
-    () => updateOrder(id)
+    (e) => onPointerDown(e),
+    (nid, px, py) => onMove(nid, px, py)
   );
 
   // Delete button is there temporarily until I can implement deletion by other means
 
   return (
     <article
-      className={`stickynote ${color} flex justify-center items-center text-lg relative`}
+      className={`stickynote ${color} flex justify-center items-center text-lg absolute touch-none`}
       id={noteID}
-      style={{ top: `${y}%`, left: `${x}%`, zIndex: index + 1 }}
+      style={{ top: `${y}%`, left: `${x}%`, zIndex: z }}
+      onPointerDown={(e) => onPointerDown(e)}
     >
       {isEditing ? (
         <textarea
@@ -38,7 +53,7 @@ export default function StickyNote({
           onChange={(e) => setNewText(e.target.value)}
           autoFocus
           onBlur={() => {
-            editNote(id, newText);
+            onEdit(id, newText);
             setIsEditing(false);
           }}
         />
@@ -47,14 +62,21 @@ export default function StickyNote({
           className={`${
             placeholder ? "text-zinc-700 italic" : ""
           } hover:cursor-pointer`}
-          onClick={() => setIsEditing(!isEditing)}
+          onClick={() => {
+            // Only activate editing if it's active
+            if (isActive) setIsEditing(true);
+            else onPointerDown(); // request the note to become active.
+          }}
         >
           {text}
         </p>
       )}
       <button
         className="p-2 absolute top-2 right-2 bg-zinc-500/60 rounded"
-        onClick={() => removeNote(id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
       >
         X
       </button>

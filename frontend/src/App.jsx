@@ -1,65 +1,68 @@
-// import { useState } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
-import NoteContainer from "./components/NoteContainer";
 import NewNotesContainer from "./components/NewNotesContainer";
+import { v4 as uuid } from "uuid";
+import { useEffect, useRef, useState } from "react";
+import StickyNote from "./components/StickyNote";
 
 function App() {
-  /*   const testingList = [
-    { text: "Yellow Test", color: "yellow", id: 1 },
-    { text: "Blue Test", color: "blue", id: 2 },
-    { text: "Red Test", color: "red", id: 3 },
-    { text: "Green Test", color: "green", id: 4 },
-    { text: "new Test", color: "yellow", id: 5 },
-    { text: "Write down your thoughts...", color: "red", id: 6 },
-  ]; */
   const [notes, setNotes] = useLocalStorage("myNotes", []);
+  const [activeId, setActiveId] = useState(null);
+
+  const maxZRef = useRef(0);
+  useEffect(() => {
+    maxZRef.current = notes.length
+      ? Math.max(...notes.map((note) => note.z || 0))
+      : 0;
+  }, [notes]);
 
   const addNew = (color) => {
+    const zIndex = maxZRef.current + 1;
+    maxZRef.current = zIndex;
+
     setNotes((prev) => [
       ...prev,
       {
         text: "Write down your thoughts...",
         color: color,
-        id: crypto.randomUUID(),
-        pos: {
-          x: 50,
-          y: 50,
-          z: notes.length + 1,
-        },
+        id: uuid(),
+        x: 50,
+        y: 50,
+        z: zIndex,
       },
     ]);
   };
 
   const removeNote = (id) => {
-    setNotes(notes.filter((note) => note.id !== id));
+    setNotes((prev) => prev.filter((note) => note.id !== id));
+    setActiveId((prev) => (prev === id ? null : prev));
   };
 
   const editNote = (id, newContent) => {
-    if (!newContent) newContent = "Write down your thoughts...";
-    setNotes(
-      notes.map((note) =>
-        note.id === id ? { ...note, text: newContent } : note
-      )
+    const text = newContent || "Write down your thoughts...";
+    setNotes((prev) =>
+      prev.map((note) => (note.id === id ? { ...note, text } : note))
     );
   };
 
-  const updateNote = (id, pos) => {
-    const { x, y } = pos;
-    const maxZ = Math.max(notes.length, 0);
+  const moveNote = (id, px, py) => {
+    const nextZ = maxZRef.current + 1;
+    maxZRef.current = nextZ;
+
     setNotes((prev) =>
       prev.map((note) =>
-        note.id === id ? { ...note, pos: { x: x, y: y, z: maxZ + 1 } } : note
+        note.id === id ? { ...note, x: px, y: py, z: nextZ } : note
       )
     );
+    setActiveId(id);
   };
 
-  const bringToFront = (id) => {
-    console.log(`bring ${id} to front.`);
-    setNotes((prev) => {
-      const activeNote = prev.find((note) => note.id === id);
-      const others = prev.filter((note) => note.id !== id);
-      return [...others, activeNote];
-    });
+  const moveToFront = (id) => {
+    const nextZ = maxZRef.current + 1;
+    maxZRef.current = nextZ;
+    setNotes((prev) =>
+      prev.map((note) => (note.id === id ? { ...note, z: nextZ } : note))
+    );
+    setActiveId(id);
   };
 
   return (
@@ -67,12 +70,28 @@ function App() {
       <section>
         <h1 className="text-xl text-center text-amber-600">Note Keeping</h1>
       </section>
-      <NoteContainer
-        notes={notes}
-        removeNote={removeNote}
-        editNote={editNote}
-        updateNote={{ updatePos: updateNote, updateOrder: bringToFront }}
-      />
+      <section className="notecontainer gap-y-5 my-5">
+        {notes &&
+          notes
+            .slice()
+            .sort((a, b) => (a.z || 0) - (b.z || 0))
+            .map((note) => (
+              <StickyNote
+                key={note.id}
+                id={note.id}
+                color={note.color}
+                text={note.text}
+                x={note.x}
+                y={note.y}
+                z={note.z}
+                isActive={activeId === note.id}
+                onPointerDown={() => moveToFront(note.id)}
+                onMove={(id, px, py) => moveNote(id, px, py)}
+                onEdit={(id, newContent) => editNote(id, newContent)}
+                onDelete={() => removeNote(note.id)}
+              />
+            ))}
+      </section>
       <NewNotesContainer addNew={addNew} />
     </main>
   );
