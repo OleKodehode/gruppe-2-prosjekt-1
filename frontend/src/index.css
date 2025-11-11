@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  @apply bg-zinc-200 dark:bg-zinc-800 text-zinc-900 m-auto relative min-h-screen max-w-screen;
+}
+
+.stickynote {
+  @apply absolute top-20 left-20 size-36 md:size-48 flex justify-center p-2 rounded cursor-grab select-none;
+}
+
+.stickynote:hover {
+  @apply outline-2 outline-neutral-300 scale-102;
+}
+
+.dragging {
+  @apply opacity-75 cursor-grabbing shadow-lg shadow-slate-900;
+}
+
+.stickynote > p {
+  @apply max-w-full wrap-break-word;
+}
+
+.pile {
+  @apply size-24 md:size-36 rounded;
+}
+
+.yellow {
+  @apply bg-yellow-200;
+}
+
+.blue {
+  @apply bg-sky-200;
+}
+
+.red {
+  @apply bg-red-300;
+}
+
+.green {
+  @apply bg-green-200;
+}
+
+textarea {
+  @apply h-full border-none outline-none overflow-clip;
+}
+
+.notecontainer {
+  @apply w-9/10 h-[90vh] relative overflow-clip;
+}
