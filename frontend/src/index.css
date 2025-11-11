@@ -27,8 +27,8 @@ main {
   @apply outline-2 outline-neutral-300 scale-102;
 }
 
-.stickynote:active {
-  @apply cursor-grabbing shadow-lg shadow-slate-900;
+.dragging {
+  @apply opacity-75 cursor-grabbing shadow-lg shadow-slate-900;
 }
 
 .stickynote > p {

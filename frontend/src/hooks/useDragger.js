@@ -56,6 +56,8 @@ export default function useDragger(
       coords.current.startLeft = target.offsetLeft;
       coords.current.startTop = target.offsetTop;
 
+      target.classList.toggle("dragging");
+
       try {
         target.setPointerCapture?.(e.pointerId);
       } catch (err) {
@@ -120,6 +122,8 @@ export default function useDragger(
       const containerHeight = geometryRef.current.containerRect?.height || 1;
       const percentX = (left / containerWidth) * 100;
       const percentY = (top / containerHeight) * 100;
+
+      target.classList.toggle("dragging");
 
       try {
         onDragEndRef.current?.(noteId, percentX, percentY);
