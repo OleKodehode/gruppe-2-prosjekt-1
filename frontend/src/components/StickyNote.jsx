@@ -50,6 +50,7 @@ export default function StickyNote({
         <textarea
           type=""
           value={newText}
+          className="note-content"
           onChange={(e) => setNewText(e.target.value)}
           autoFocus
           onBlur={() => {
@@ -61,8 +62,9 @@ export default function StickyNote({
         <p
           className={`${
             placeholder ? "text-zinc-700 italic" : ""
-          } hover:cursor-pointer`}
-          onClick={() => {
+          } hover:cursor-pointer note-content`}
+          onClick={(e) => {
+            e.stopPropagation();
             // Only activate editing if it's active
             if (isActive) setIsEditing(true);
             else onPointerDown(); // request the note to become active.
@@ -72,9 +74,8 @@ export default function StickyNote({
         </p>
       )}
       <button
-        className="p-2 absolute top-2 right-2 bg-zinc-500/60 rounded"
-        onClick={(e) => {
-          e.stopPropagation();
+        className="note-content p-1 px-2 absolute top-2 right-2 bg-zinc-500/40 rounded-2xl cursor-pointer"
+        onClick={() => {
           onDelete();
         }}
       >

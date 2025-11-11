@@ -48,6 +48,9 @@ export default function useDragger(
         console.error(err);
       }
 
+      const noDrag = e.target.closest(".note-content, p, button, textarea");
+      if (noDrag) return;
+
       draggingRef.current = true;
       getGeometry();
 
